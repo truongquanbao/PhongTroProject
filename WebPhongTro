@@ -1,0 +1,67 @@
+🧠 1. Ý tưởng tổng quát
+Xây dựng website cho phép:
+Người dùng đăng tin cho thuê hoặc tìm phòng.
+Khách có thể xem bản đồ, lọc phòng theo khu vực, giá, diện tích.
+Có đăng nhập / đăng ký / phân quyền (chủ trọ và người thuê).
+Admin có thể duyệt, xoá, quản lý bài đăng.
+👉 Giống như một phiên bản thu nhỏ của PhongTro123.com hoặc Batdongsan.com.
+
+🧩 2. Chức năng chi tiết
+Nhóm	Chức năng chính	Mô tả
+👤 Người dùng	Đăng ký / đăng nhập	Tạo tài khoản để đăng bài hoặc tìm phòng
+🏠 Phòng trọ	CRUD bài đăng	Thêm, sửa, xóa, xem chi tiết phòng trọ
+🔎 Tìm kiếm	Tìm phòng theo quận, giá, diện tích, loại phòng	Có thể lọc kết hợp
+🗺️ Bản đồ	Tích hợp Google Map API	Hiển thị vị trí phòng
+📸 Ảnh	Upload ảnh phòng trọ	Lưu đường dẫn ảnh lên server
+⭐ Bình luận / đánh giá	Người thuê có thể đánh giá chủ trọ	Tùy chọn mở rộng
+🧑‍💼 Quản trị viên	Duyệt bài, xoá bài vi phạm	Trang admin riêng
+
+🗂️ 3. Thiết kế cơ sở dữ liệu (MySQL)
+Ví dụ CSDL PHONGTRO_DB
+
+Bảng users
+user_id	username	password	email	role	date_created
+int (PK)	varchar	varchar	varchar	varchar('user'/'admin')	datetime
+
+Bảng rooms
+room_id	title	description	price	area	address	district	image	owner_id (FK→users)	status
+
+Bảng comments
+comment_id	room_id (FK)	user_id (FK)	content	date_posted
+
+Bảng favorites (tùy chọn)
+| user_id | room_id |
+
+⚙️ 4. Kiến trúc project Java Servlet + JSP
+Cấu trúc chuẩn (MVC):
+
+PhongTroProject/
+│
+├── src/
+│   ├── controller/      # Servlet điều khiển (RoomController, UserController,…)
+│   ├── dao/             # Data Access Object (RoomDAO, UserDAO,…)
+│   ├── model/           # Các class entity (Room.java, User.java,…)
+│   └── util/            # DBConnection.java
+│
+├── WebContent/
+│   ├── WEB-INF/
+│   │   └── web.xml      # Cấu hình servlet
+│   ├── jsp/
+│   │   ├── room-list.jsp
+│   │   ├── room-detail.jsp
+│   │   ├── login.jsp
+│   │   ├── register.jsp
+│   │   └── admin.jsp
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+└── lib/
+    └── mysql-connector-j.jar
+
+🧩 5. Các bước thực hiện cụ thể
+Bước 1: Tạo cấu trúc project
+
+IDE: Eclipse / IntelliJ
+
+Tạo Dynamic Web Project → thêm mysql-connector-java.jar vào WEB-INF/lib.
