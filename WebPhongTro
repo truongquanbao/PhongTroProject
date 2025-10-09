@@ -1,67 +1,108 @@
-🧠 1. Ý tưởng tổng quát
+🧠 I. Ý tưởng tổng thể
+Mục tiêu:
 Xây dựng website cho phép:
-Người dùng đăng tin cho thuê hoặc tìm phòng.
-Khách có thể xem bản đồ, lọc phòng theo khu vực, giá, diện tích.
-Có đăng nhập / đăng ký / phân quyền (chủ trọ và người thuê).
+Người dùng đăng tin cho thuê phòng trọ (chủ trọ).
+Người thuê có thể tìm kiếm, lọc, xem chi tiết phòng trọ.
+Có đăng nhập/đăng ký, phân quyền (chủ trọ và người thuê).
 Admin có thể duyệt, xoá, quản lý bài đăng.
-👉 Giống như một phiên bản thu nhỏ của PhongTro123.com hoặc Batdongsan.com.
+👉 Giống như một phiên bản rút gọn của Nhà Tốt, tập trung vào phòng trọ.
 
-🧩 2. Chức năng chi tiết
-Nhóm	Chức năng chính	Mô tả
-👤 Người dùng	Đăng ký / đăng nhập	Tạo tài khoản để đăng bài hoặc tìm phòng
-🏠 Phòng trọ	CRUD bài đăng	Thêm, sửa, xóa, xem chi tiết phòng trọ
-🔎 Tìm kiếm	Tìm phòng theo quận, giá, diện tích, loại phòng	Có thể lọc kết hợp
-🗺️ Bản đồ	Tích hợp Google Map API	Hiển thị vị trí phòng
-📸 Ảnh	Upload ảnh phòng trọ	Lưu đường dẫn ảnh lên server
-⭐ Bình luận / đánh giá	Người thuê có thể đánh giá chủ trọ	Tùy chọn mở rộng
-🧑‍💼 Quản trị viên	Duyệt bài, xoá bài vi phạm	Trang admin riêng
+🏗 II. Quy trình làm (theo từng giai đoạn)
+Giai đoạn 1: Thiết kế cơ sở dữ liệu
+Tạo CSDL phongtro_db gồm các bảng chính:
 
-🗂️ 3. Thiết kế cơ sở dữ liệu (MySQL)
-Ví dụ CSDL PHONGTRO_DB
+Bảng	                  Mô tả	                                          Cột chính
+users	        Lưu thông tin người dùng	            user_id, username, password, role (admin, owner, renter)
+phong_tro	    Lưu thông tin phòng trọ	                phong_id, tieu_de, mo_ta, gia, dien_tich, dia_chi, hinh_anh, user_id, trang_thai (pending, approved)
+binh_luan	    Bình luận phòng trọ	                    bl_id, user_id, phong_id, noi_dung, ngay_dang
+yeu_thich	    Danh sách yêu thích của người dùng	    user_id, phong_id
 
-Bảng users
-user_id	username	password	email	role	date_created
-int (PK)	varchar	varchar	varchar	varchar('user'/'admin')	datetime
-
-Bảng rooms
-room_id	title	description	price	area	address	district	image	owner_id (FK→users)	status
-
-Bảng comments
-comment_id	room_id (FK)	user_id (FK)	content	date_posted
-
-Bảng favorites (tùy chọn)
-| user_id | room_id |
-
-⚙️ 4. Kiến trúc project Java Servlet + JSP
-Cấu trúc chuẩn (MVC):
-
-PhongTroProject/
+Giai đoạn 2: Thiết kế kiến trúc web
+📂 Cấu trúc thư mục (chuẩn MVC trong Servlet & JSP)
+PhongTroWeb/
 │
 ├── src/
-│   ├── controller/      # Servlet điều khiển (RoomController, UserController,…)
-│   ├── dao/             # Data Access Object (RoomDAO, UserDAO,…)
-│   ├── model/           # Các class entity (Room.java, User.java,…)
-│   └── util/            # DBConnection.java
+│   ├── controller/
+│   │   ├── PhongTroServlet.java
+│   │   ├── UserServlet.java
+│   │   └── AdminServlet.java
+│   │
+│   ├── dao/
+│   │   ├── UserDAO.java
+│   │   ├── PhongTroDAO.java
+│   │   └── DBConnection.java
+│   │
+│   ├── model/
+│   │   ├── User.java
+│   │   └── PhongTro.java
+│   │
+│   └── utils/
+│       └── Validation.java
 │
-├── WebContent/
-│   ├── WEB-INF/
-│   │   └── web.xml      # Cấu hình servlet
-│   ├── jsp/
-│   │   ├── room-list.jsp
-│   │   ├── room-detail.jsp
-│   │   ├── login.jsp
-│   │   ├── register.jsp
-│   │   └── admin.jsp
-│   ├── css/
-│   ├── js/
-│   └── images/
+├── WebContent/  (hoặc webapp/)
+│   ├── index.jsp
+│   ├── login.jsp
+│   ├── register.jsp
+│   ├── phong-list.jsp
+│   ├── phong-detail.jsp
+│   ├── admin/
+│   │   └── admin-dashboard.jsp
+│   ├── owner/
+│   │   ├── them-phong.jsp
+│   │   └── quan-ly-phong.jsp
+│   └── assets/
+│       ├── css/
+│       ├── js/
+│       └── images/
 │
-└── lib/
-    └── mysql-connector-j.jar
+└── WEB-INF/
+    └── web.xml
 
-🧩 5. Các bước thực hiện cụ thể
-Bước 1: Tạo cấu trúc project
+Giai đoạn 3: Chức năng chi tiết
 
-IDE: Eclipse / IntelliJ
+🧩 Người dùng
+Đăng ký, đăng nhập.
+Xem danh sách phòng trọ (tất cả hoặc theo bộ lọc).
+Xem chi tiết phòng trọ.
+Bình luận hoặc lưu vào danh sách yêu thích.
 
-Tạo Dynamic Web Project → thêm mysql-connector-java.jar vào WEB-INF/lib.
+🏠 Chủ trọ
+Đăng tin cho thuê (thêm phòng).
+Sửa, xoá bài đăng của mình.
+Xem trạng thái phê duyệt bài.
+
+🧑‍💼 Admin
+Quản lý người dùng.
+Duyệt hoặc xoá bài đăng phòng trọ.
+
+🔍 Bộ lọc tìm kiếm
+Người dùng có thể tìm theo:
+Khu vực (địa chỉ, quận/huyện)
+Giá (từ ... đến ...)
+Diện tích
+Từ khóa trong tiêu đề/mô tả
+
+Giai đoạn 4: Công nghệ & kỹ thuật sử dụng
+Thành phần	                                   Mô tả
+Backend	                              Java Servlet + JSP + JDBC
+Database	                          MySQL
+Frontend	                          HTML5, CSS3, Bootstrap, JSP tag
+IDE	                                  Eclipse / IntelliJ IDEA
+Server	                              Apache Tomcat
+Upload ảnh	                          Thư viện Apache Commons FileUpload
+Session	                              Quản lý đăng nhập
+JDBC Connection Pool	              Tối ưu kết nối DB
+
+Giai đoạn 5: Giao diện
+Giao diện có thể học theo bố cục nhatot.com/mua-ban-nha-dat:
+Header: logo, menu, nút đăng nhập / đăng tin.
+Trang chủ: thanh tìm kiếm + danh sách phòng trọ mới nhất.
+Trang chi tiết: ảnh + mô tả + bản đồ.
+Trang quản lý: bảng danh sách bài đăng.
+
+Giai đoạn 6: Chức năng nâng cao (nếu muốn mở rộng)
+Upload nhiều ảnh cho mỗi phòng
+Hiển thị bản đồ (Google Maps API).
+Gửi email xác nhận khi đăng tin.
+Tích hợp chat giữa chủ trọ và người thuê.
+Responsive cho mobile.
